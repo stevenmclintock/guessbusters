@@ -1,45 +1,40 @@
-use reqwest::Client;
-use reqwest::header::{ACCEPT, AUTHORIZATION, HeaderMap, HeaderValue};
 use serde_derive::Deserialize;
 use serde_derive::Serialize;
+use reqwest::Client;
 use std::error::Error;
+use crate::tmdb::headers;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Discover {
-    pub page: i64,
-    pub results: Vec<DiscoverResult>,
+    pub results: Vec<Movie>,
     #[serde(rename = "total_pages")]
     pub total_pages: i64,
-    #[serde(rename = "total_results")]
-    pub total_results: i64,
 }
 
 impl Discover {
-    pub async fn get (client: &Client, tmdb_api_key: &str, page: i64) -> Result<Discover, Box<dyn Error>> {
-        let mut headers = HeaderMap::new();
-        headers
-            .insert(AUTHORIZATION, HeaderValue::from_str(&format!("Bearer {}", tmdb_api_key))
-            .expect("Invalid authorization header value"));
-        headers
-            .insert(ACCEPT, HeaderValue::from_str("application/json")
-            .expect("Invalid accept header value"));
-
-        let page_as_parameter = page.to_string();
-
+    pub async fn get (client: &Client, tmdb_api_key: &str, mut page: i64) -> Result<Discover, Box<dyn Error>> {
         let params = [
             ("include_adult", "false"),
             ("include_video", "false"),
             ("language", "en-US"),
-            ("page", &page_as_parameter),
-            ("sort_by", "popularity.desc")
+            ("sort_by", "popularity.desc"),
+            ("vote_average.gte", "8"),
+            ("with_original_language", "en"),
+            ("without_genres", "99,36,10402,10770")
         ];
+
+        /*
+        * The TMDB API does not let you pass in a "page" 
+        * parameter that is greater than 500.
+        */
+        page = if page > 500 { 500 } else { page };
 
         Ok(
             client
-                .get("https://api.themoviedb.org/3/discover/movie")
+                .get(format!("https://api.themoviedb.org/3/discover/movie?page={}", page.to_string()))
                 .query(&params)
-                .headers(headers)
+                .headers(headers::default_headers(&tmdb_api_key))
                 .send()
                 .await?
                 .json::<Discover>()
@@ -50,27 +45,14 @@ impl Discover {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct DiscoverResult {
-    pub adult: bool,
-    #[serde(rename = "backdrop_path")]
-    pub backdrop_path: String,
+pub struct Movie {
     #[serde(rename = "genre_ids")]
     pub genre_ids: Vec<i64>,
     pub id: i64,
-    #[serde(rename = "original_language")]
-    pub original_language: String,
-    #[serde(rename = "original_title")]
-    pub original_title: String,
     pub overview: String,
-    pub popularity: f64,
     #[serde(rename = "poster_path")]
-    pub poster_path: String,
+    pub poster_path: Option<String>,
     #[serde(rename = "release_date")]
     pub release_date: String,
     pub title: String,
-    pub video: bool,
-    #[serde(rename = "vote_average")]
-    pub vote_average: f64,
-    #[serde(rename = "vote_count")]
-    pub vote_count: i64,
 }

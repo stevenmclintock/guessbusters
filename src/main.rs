@@ -1,6 +1,7 @@
 use std::env;
 use std::error::Error;
 use dotenv::dotenv;
+use reqwest::Client;
 mod tmdb;
 
 #[tokio::main]
@@ -11,11 +12,11 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let tmdb_api_key = env::var("TMDB_API_KEY")
         .expect("TMDB_API_KEY environment value not found");
 
-    let client = reqwest::Client::new();
+    let client = Client::new();
 
-    let resp = tmdb::discover::Discover::get(&client, &tmdb_api_key, 1).await?;
+    let resp = tmdb::random_movie_details(&client, &tmdb_api_key).await?;
 
-    println!("total pages is {}", resp.total_pages);
+    println!("random movie is {:?}", resp);
 
     Ok(())
 }
