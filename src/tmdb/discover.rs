@@ -7,7 +7,7 @@ use crate::tmdb::headers;
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Discover {
-    pub results: Vec<Movie>,
+    pub results: Vec<Overview>,
     #[serde(rename = "total_pages")]
     pub total_pages: i64,
 }
@@ -19,7 +19,7 @@ impl Discover {
             ("include_video", "false"),
             ("language", "en-US"),
             ("sort_by", "popularity.desc"),
-            ("vote_average.gte", "8"),
+            ("vote_average.gte", "5"),
             ("with_original_language", "en"),
             ("without_genres", "99,36,10402,10770")
         ];
@@ -45,7 +45,7 @@ impl Discover {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Movie {
+pub struct Overview {
     #[serde(rename = "genre_ids")]
     pub genre_ids: Vec<i64>,
     pub id: i64,

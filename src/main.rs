@@ -16,7 +16,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let resp = tmdb::random_movie_details(&client, &tmdb_api_key).await?;
 
-    println!("random movie is {:?}", resp);
+    println!("random movie overview is {:?}", resp.overview);
+    println!("random movie credits is {:?}", resp.credits);
 
     Ok(())
 }
