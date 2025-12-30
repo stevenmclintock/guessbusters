@@ -5,18 +5,18 @@ pub fn get_questions (random_movie_details: &RandomMovieDetails, genres: &Vec<Ge
     let mut questions: Vec<String> = Vec::new();
 
     let genres = genres
-                                .into_iter()
-                                .filter(|genre| random_movie_details.metadata.genre_ids.contains(&genre.id))
-                                .map(|crew| crew.name.clone())
-                                .collect::<Vec<String>>()
-                                .join(", ");
+        .into_iter()
+        .filter(|genre| random_movie_details.metadata.genre_ids.contains(&genre.id))
+        .map(|crew| crew.name.clone())
+        .collect::<Vec<String>>()
+        .join(", ");
     
     let directors = random_movie_details.credits.crew
-                                .iter()
-                                .filter(|crew| crew.job.to_lowercase() == "director")
-                                .map(|crew| crew.name.clone())
-                                .collect::<Vec<String>>()
-                                .join(", ");
+        .iter()
+        .filter(|crew| crew.job.to_lowercase() == "director")
+        .map(|crew| crew.name.clone())
+        .collect::<Vec<String>>()
+        .join(", ");
 
     let release_date = &random_movie_details.metadata.release_date;
 
