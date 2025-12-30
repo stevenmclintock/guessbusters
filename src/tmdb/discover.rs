@@ -7,7 +7,7 @@ use crate::tmdb::headers;
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Discover {
-    pub results: Vec<Overview>,
+    pub results: Vec<Metadata>,
     #[serde(rename = "total_pages")]
     pub total_pages: i64,
 }
@@ -45,7 +45,7 @@ impl Discover {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Overview {
+pub struct Metadata {
     #[serde(rename = "genre_ids")]
     pub genre_ids: Vec<i64>,
     pub id: i64,

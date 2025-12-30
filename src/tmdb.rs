@@ -4,9 +4,10 @@ use rand::Rng;
 pub mod headers;
 pub mod discover;
 pub mod credits;
+pub mod genres;
 
 pub struct RandomMovieDetails {
-    pub overview: discover::Overview,
+    pub metadata: discover::Metadata,
     pub credits: credits::Credits,
     pub multi_choice: [String; 2]
 }
@@ -35,7 +36,7 @@ pub async fn random_movie_details (client: &Client, tmdb_api_key: &str) -> Resul
      * the random page and return the first result
      * to use as the random movie.
      */
-    let overview = 
+    let metadata = 
         discover::Discover::get(&client, &tmdb_api_key, random_page)
             .await?
             .results[0]
@@ -46,7 +47,7 @@ pub async fn random_movie_details (client: &Client, tmdb_api_key: &str) -> Resul
      * movie we've retrieved to fetch the cast and crew.
      */
     let credits = 
-        credits::Credits::get(&client, &tmdb_api_key, overview.id).await?;
+        credits::Credits::get(&client, &tmdb_api_key, metadata.id).await?;
 
-    Ok(RandomMovieDetails { overview, credits, multi_choice: [multi_choice_1, multi_choice_2] })
+    Ok(RandomMovieDetails { metadata, credits, multi_choice: [multi_choice_1, multi_choice_2] })
 }

@@ -3,6 +3,7 @@ use std::error::Error;
 use dotenv::dotenv;
 use reqwest::Client;
 mod tmdb;
+mod questions;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
@@ -14,10 +15,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let client = Client::new();
 
-    let resp = tmdb::random_movie_details(&client, &tmdb_api_key).await?;
+    let genres = tmdb::genres::Genres::get(&client, &tmdb_api_key).await?.genres;
 
-    println!("random movie overview is {:?}", resp.overview);
-    println!("random movie credits is {:?}", resp.credits);
+    let random_movie_details = tmdb::random_movie_details(&client, &tmdb_api_key).await?;
+
+    println!("random movie metadata is {:?}", random_movie_details.metadata);
+    println!("random movie credits is {:?}", random_movie_details.credits);
+
+    println!("questions are: {:?}", questions::get_questions(&random_movie_details, &genres));
 
     Ok(())
 }
