@@ -1,5 +1,5 @@
 use reqwest::Client;
-use std::error::Error;
+use std::{error::Error};
 use rand::Rng;
 pub mod headers;
 pub mod discover;
@@ -9,7 +9,7 @@ pub mod genres;
 pub struct RandomMovieDetails {
     pub metadata: discover::Metadata,
     pub credits: credits::Credits,
-    pub multi_choice: [String; 2]
+    pub multi_choice: [String; 3]
 }
 
 pub async fn random_movie_details (client: &Client, tmdb_api_key: &str) -> Result<RandomMovieDetails, Box<dyn Error>> {
@@ -18,10 +18,6 @@ pub async fn random_movie_details (client: &Client, tmdb_api_key: &str) -> Resul
      * to determine the total page count.
      */
     let initial_discover_resp = discover::Discover::get(&client, &tmdb_api_key, 1).await?;
-
-    let multi_choice_1 = initial_discover_resp.results[0].title.clone();
-    let multi_choice_2 = initial_discover_resp.results[1].title.clone();
-
 
     /*
      * Generate a random number between 1 and 
@@ -41,6 +37,13 @@ pub async fn random_movie_details (client: &Client, tmdb_api_key: &str) -> Resul
             .await?
             .results[0]
             .clone();
+    
+    // Retrieve the 3 movie titles to use as the multiple choice question
+    let multi_choice = [
+        initial_discover_resp.results[0].title.clone(),
+        initial_discover_resp.results[1].title.clone(),
+        metadata.title.clone()
+    ];
 
     /*
      * Execute a "credits" request using the ID of the random
@@ -49,5 +52,5 @@ pub async fn random_movie_details (client: &Client, tmdb_api_key: &str) -> Resul
     let credits = 
         credits::Credits::get(&client, &tmdb_api_key, metadata.id).await?;
 
-    Ok(RandomMovieDetails { metadata, credits, multi_choice: [multi_choice_1, multi_choice_2] })
+    Ok(RandomMovieDetails { metadata, credits, multi_choice })
 }
