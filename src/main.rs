@@ -19,6 +19,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let random_movie_details = tmdb::random_movie_details(&client, &tmdb_api_key).await?;
 
+    println!("Welcome to Guessbusters!");
+    println!("4 questions. 4 chances. Can you guess the random movie?");
+
     println!("random movie is {:?}", random_movie_details.metadata.title);
 
     println!("questions are: {:?}", questions::get_questions(&random_movie_details, &genres));
