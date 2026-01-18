@@ -30,12 +30,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let questions = questions::get_questions(&random_movie, &genres);
 
     let mut winner = false;
-    let mut console_input = String::new();
+    
     for question in questions.iter() {
         println!("{}", question);
         println!("Please enter your guess. Or enter P to pass:");
 
         // Prompt the user for their guess
+        let mut console_input = String::new();
         stdin().read_line(&mut console_input).expect("Oops! Something went wrong.");
 
         // Normalize the console input and random movie
@@ -48,9 +49,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
             guess if guess == normalized_random_movie => true,
             _ => false
         };
-
-        // Clear the console input variable
-        console_input.clear();
 
         /*
          * Don't ask any further questions if the guess was correct,
