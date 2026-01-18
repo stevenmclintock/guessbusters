@@ -1,37 +1,37 @@
 use rand::seq::SliceRandom;
 use rand::{rng};
 
-use crate::tmdb::RandomMovieDetails;
+use crate::tmdb::RandomMovie;
 use crate::tmdb::credits::Cast;
 use crate::tmdb::genres::Genre;
 
 const NOT_ENOUGH_INFORMATION: &str = "Oops! We didn't have enough information for this question.";
 
-pub fn get_questions (random_movie_details: &RandomMovieDetails, genres: &Vec<Genre>) -> [String; 4] {
+pub fn get_questions (random_movie: &RandomMovie, genres: &Vec<Genre>) -> [String; 4] {
     return [
-        get_question_1(&random_movie_details, &genres),
-        get_question_2(&random_movie_details.credits.cast),
-        get_question_3(&random_movie_details.metadata.overview),
-        get_question_4(&random_movie_details.multi_choice)
+        get_question_1(&random_movie, &genres),
+        get_question_2(&random_movie.credits.cast),
+        get_question_3(&random_movie.metadata.overview),
+        get_question_4(&random_movie.multi_choice)
     ];
 }
 
-fn get_question_1 (random_movie_details: &RandomMovieDetails, genres: &Vec<Genre>) -> String {
+fn get_question_1 (random_movie: &RandomMovie, genres: &Vec<Genre>) -> String {
     let genres = genres
         .into_iter()
-        .filter(|genre| random_movie_details.metadata.genre_ids.contains(&genre.id))
+        .filter(|genre| random_movie.metadata.genre_ids.contains(&genre.id))
         .map(|crew| crew.name.clone())
         .collect::<Vec<String>>()
         .join(", ");
     
-    let directors = random_movie_details.credits.crew
+    let directors = random_movie.credits.crew
         .iter()
         .filter(|crew| crew.job.to_lowercase() == "director")
         .map(|crew| crew.name.clone())
         .collect::<Vec<String>>()
         .join(", ");
 
-    let release_date = &random_movie_details.metadata.release_date;
+    let release_date = &random_movie.metadata.release_date;
 
     return 
         if genres.len() > 0 && release_date.len() > 0 && directors.len() > 0 {
