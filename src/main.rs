@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     
     for question in questions.iter() {
         println!("{}", question);
-        println!("Please enter your guess. Or enter P to pass:");
+        println!("Please enter your guess. Or enter S to skip to the next question:");
 
         // Prompt the user for their guess
         let mut console_input = String::new();
@@ -56,7 +56,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
          */
         if winner {
             break;
-        } else if normalized_console_input == "p" {
+        } else if normalized_console_input == "s" {
             println!("Ok. I'll skip that one.");
         } else {
             println!("Nope! That was incorrect.");
