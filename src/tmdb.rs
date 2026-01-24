@@ -28,23 +28,29 @@ impl RandomMovie {
         let mut rng = rand::rng();
         let random_page = rng.random_range(1..initial_discover_resp.total_pages);
 
-        /*
-        * Execute another "discover" request using
-        * the random page and return the first result
-        * to use as the random movie.
-        */
-        let metadata = 
-            discover::Discover::get(&client, &tmdb_api_key, random_page)
-                .await?
-                .results[0]
-                .clone();
+
+
+        // Execute another "discover" request using the random page
+        let random_discover_resp = discover::Discover::get(&client, &tmdb_api_key, random_page).await?;
+
+        // Return the first result to use as the random movie
+        let metadata = random_discover_resp.results[0].clone();
         
         // Retrieve the 3 movie titles to use as the multiple choice question
-        let multi_choice = [
-            initial_discover_resp.results[0].title.clone(),
-            initial_discover_resp.results[1].title.clone(),
-            metadata.title.clone()
-        ];
+        let multi_choice = if random_discover_resp.results.len() >= 3 {
+                [
+                    metadata.title.clone(),
+                    random_discover_resp.results[1].title.clone(),
+                    random_discover_resp.results[2].title.clone(),
+                    
+                ]
+            } else {
+                [
+                    metadata.title.clone(),
+                    initial_discover_resp.results[0].title.clone(),
+                    initial_discover_resp.results[1].title.clone(),
+                ]
+            };
 
         /*
         * Execute a "credits" request using the ID of the random
