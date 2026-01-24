@@ -56,10 +56,15 @@ fn get_question_1 (random_movie: &RandomMovie, genres: &Vec<Genre>) -> String {
 fn get_question_2 (cast: &Vec<Cast>) -> String {
     let cast = cast
         .into_iter()
-        .filter(|cast| cast.known_for_department.to_lowercase() == "acting")
+        .filter(|cast| cast.known_for_department.to_lowercase() == "acting" && !cast.name.is_empty())
         .take(3)
-        .map(|cast| format!("{} as {}", cast.name, cast.character))
-        .collect::<Vec<String>>()
+        .map(|cast| {
+            if !cast.character.is_empty() {
+                format!("{} as {}", cast.name, cast.character)
+            } else {
+                cast.name.clone()
+            }
+        }).collect::<Vec<String>>()
         .join(", ");
 
     return
