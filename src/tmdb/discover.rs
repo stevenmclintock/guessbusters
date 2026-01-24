@@ -13,7 +13,7 @@ pub struct Discover {
 }
 
 impl Discover {
-    pub async fn get (client: &Client, tmdb_api_key: &str, mut page: i64) -> Result<Discover, Box<dyn Error>> {
+    pub async fn get (client: &Client, tmdb_api_key: &str, page: i64) -> Result<Discover, Box<dyn Error>> {
         let params = [
             ("include_adult", "false"),
             ("include_video", "false"),
@@ -23,12 +23,6 @@ impl Discover {
             ("with_original_language", "en"),
             ("without_genres", "99,36,10402,10770")
         ];
-
-        /*
-        * The TMDB API does not let you pass in a "page" 
-        * parameter that is greater than 500.
-        */
-        page = if page > 500 { 500 } else { page };
 
         Ok(
             client

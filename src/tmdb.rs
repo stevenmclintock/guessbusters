@@ -26,9 +26,16 @@ impl RandomMovie {
         * random movie for the user to guess!
         */
         let mut rng = rand::rng();
-        let random_page = rng.random_range(1..initial_discover_resp.total_pages);
+        let mut random_page = rng.random_range(1..initial_discover_resp.total_pages);
 
-
+        /*
+        * The TMDB API does not let you pass in a "page" 
+        * parameter that is greater than 500 (for some reason?!),
+        * so handle this accordingly.
+        */
+        if random_page > 500 {
+            random_page = rng.random_range(1..500);
+        }
 
         // Execute another "discover" request using the random page
         let random_discover_resp = discover::Discover::get(&client, &tmdb_api_key, random_page).await?;
