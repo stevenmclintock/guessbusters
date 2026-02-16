@@ -27,7 +27,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("4 questions. 4 chances. Can you guess the random movie?");
 
     // Retrieve the questions
-    let questions = questions::get_questions(&random_movie, &genres);
+    let questions = questions::Questions::get(&random_movie, &genres).questions;
 
     let mut winner = false;
     
