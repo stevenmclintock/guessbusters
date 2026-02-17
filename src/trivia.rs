@@ -40,6 +40,10 @@ impl Trivia {
         )
     }
 
+    pub fn check(guess: &String, answer: &String) -> bool {
+        guess.trim().to_lowercase() == answer.trim().to_lowercase()
+    }
+
     fn get_question_1 (random_movie: &tmdb::RandomMovie, genres: &Vec<tmdb::genres::Genre>) -> String {
         let genres = genres
             .into_iter()

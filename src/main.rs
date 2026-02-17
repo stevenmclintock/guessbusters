@@ -4,35 +4,33 @@ use dotenv::dotenv;
 
 mod trivia;
 
+const SKIP_QUESTION_KEY: &str = "S";
+
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     // Load environment variables from .env file
     dotenv().ok();
 
-    println!("Welcome to Guessbusters!");
-    println!("4 questions. 4 chances. Can you guess the random movie?");
-
     // Retrieve the trivia (e.g. the questions and the answer)
     let trivia = trivia::Trivia::get().await?;
+
+    println!("Welcome to Guessbusters!");
+    println!("4 questions. 4 chances. Can you guess the random movie?");
 
     let mut winner = false;
     
     for question in trivia.questions.iter() {
         println!("{}", question);
-        println!("Please enter your guess. Or enter S to skip to the next question:");
+        println!("Please enter your guess. Or enter {} to skip to the next question:", SKIP_QUESTION_KEY);
 
         // Prompt the user for their guess
         let mut console_input = String::new();
         stdin().read_line(&mut console_input).expect("Oops! Something went wrong.");
 
-        // Normalize the console input and random movie
-        let normalized_console_input = console_input.trim().to_lowercase();
-        let normalized_random_movie = trivia.answer.trim().to_lowercase();
-
         // Determine if the guess is correct
-        winner = match normalized_console_input.as_str() {
-            "p" => false,
-            guess if guess == normalized_random_movie => true,
+        winner = match console_input.trim() {
+            SKIP_QUESTION_KEY => false,
+            guess if trivia::Trivia::check(&guess.to_string(), &trivia.answer) => true,
             _ => false
         };
 
@@ -42,7 +40,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
          */
         if winner {
             break;
-        } else if normalized_console_input == "s" {
+        } else if console_input.trim() == SKIP_QUESTION_KEY {
             println!("Ok. I'll skip that one.");
         } else {
             println!("Nope! That was incorrect.");
