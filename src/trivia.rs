@@ -1,29 +1,46 @@
+use std::env;
 use rand::seq::SliceRandom;
 use rand::{rng};
+use reqwest::Client;
+use std::error::Error;
 
-use crate::tmdb::RandomMovie;
-use crate::tmdb::credits::Cast;
-use crate::tmdb::genres::Genre;
+pub mod tmdb;
 
 const NOT_ENOUGH_INFORMATION: &str = "Oops! We didn't have enough information for this question.";
 
-pub struct Questions {
-    pub questions: [String; 4]
+pub struct Trivia {
+    pub questions: [String; 4],
+    pub answer: String
 }
 
-impl Questions {
-    pub fn get(random_movie: &RandomMovie, genres: &Vec<Genre>) -> Questions {
-        Questions {
-            questions: [
-                Self::get_question_1(&random_movie, &genres),
-                Self::get_question_2(&random_movie.credits.cast),
-                Self::get_question_3(&random_movie.metadata.overview),
-                Self::get_question_4(&random_movie.multi_choice)
-            ]
-        }
+impl Trivia {
+    pub async fn get() -> Result<Trivia, Box<dyn Error>> {
+        // Retrieve the TMDB API key from .env file
+        let tmdb_api_key = env::var("TMDB_API_KEY")
+            .expect("TMDB_API_KEY environment value not found");
+
+        /*
+        * Retrieve a list of all movie genres using the TMDB API,
+        * in addition to a random movie for the user to guess.
+        */
+        let client = Client::new();
+        let genres = tmdb::genres::Genres::get(&client, &tmdb_api_key).await?.genres;
+        let random_movie = tmdb::RandomMovie::get(&client, &tmdb_api_key).await?;
+
+        Ok(
+            Trivia {
+                questions: [
+                    Self::get_question_1(&random_movie, &genres),
+                    Self::get_question_2(&random_movie.credits.cast),
+                    Self::get_question_3(&random_movie.metadata.overview),
+                    Self::get_question_4(&random_movie.multi_choice)
+                ],
+                answer: random_movie.metadata.title
+            }
+        )
     }
 
-    fn get_question_1 (random_movie: &RandomMovie, genres: &Vec<Genre>) -> String {
+    fn get_question_1 (random_movie: &tmdb::RandomMovie, genres: &Vec<tmdb::genres::Genre>) -> String {
         let genres = genres
             .into_iter()
             .filter(|genre| random_movie.metadata.genre_ids.contains(&genre.id))
@@ -60,7 +77,7 @@ impl Questions {
             };
     }
 
-    fn get_question_2 (cast: &Vec<Cast>) -> String {
+    fn get_question_2 (cast: &Vec<tmdb::credits::Cast>) -> String {
         let cast = cast
             .into_iter()
             .filter(|cast| cast.known_for_department.to_lowercase() == "acting" && !cast.name.is_empty())

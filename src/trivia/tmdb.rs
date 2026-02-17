@@ -1,10 +1,11 @@
 use reqwest::Client;
 use std::{error::Error};
 use rand::Rng;
-pub mod headers;
+
 pub mod discover;
 pub mod credits;
 pub mod genres;
+pub mod headers;
 
 pub struct RandomMovie {
     pub metadata: discover::Metadata,

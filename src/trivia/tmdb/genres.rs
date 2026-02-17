@@ -2,7 +2,8 @@ use serde_derive::Deserialize;
 use serde_derive::Serialize;
 use reqwest::Client;
 use std::error::Error;
-use crate::tmdb::headers;
+
+use crate::trivia::tmdb::headers;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
