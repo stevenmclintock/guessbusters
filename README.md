@@ -2,14 +2,13 @@
 
 Guessbusters is a command-line trivia game that challenges you to identify random movies based on four clues. Built entirely in **Rust**, the application uses the TMDB (The Movie Database) API to fetch real movie data and generate dynamic questions. Each game presents you with four different types of clues: movie genres, cast members, plot overview, and a multiple-choice question. Can you guess the correct movie title before running out of chances?
 
-![1Password CLI](./img/1password-cli.png)
-
-
 ![Guessbusters running in the terminal](./img/terminal.png)
 
 The game is designed for quick, interactive play with questions generated on-the-fly from TMDB's extensive movie database. Whether you're a movie buff looking for a fun challenge or just want to test your cinema knowledge, Guessbusters offers an engaging way to discover (and be reminded of) films from across the entire spectrum of cinema.
 
 ## How to Run Locally
+
+![1Password CLI](./img/1password-cli.png)
 
 ### Prerequisites
 - **Rust**: Install Rust from [rustup.rs](https://rustup.rs/)
